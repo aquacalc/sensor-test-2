@@ -24,6 +24,8 @@
 		co2: 'CO₂'
 	};
 
+	const STORAGE_KEY = 'sensor-test-selected-tank';
+
 	// Active selected tank state controlled by the radio buttons
 	let selectedTank = $state('tank-1');
 
@@ -75,10 +77,18 @@
 		}
 	}
 
+	onMount(() => {
+		const savedSelection = window.localStorage.getItem(STORAGE_KEY);
+		if (savedSelection && (savedSelection === 'all' || TANKS.includes(savedSelection))) {
+			selectedTank = savedSelection;
+		}
+	});
+
 	// Automatically re-bind streams whenever `selectedTank` changes
 	$effect(() => {
 		const activeTankIds = selectedTank === 'all' ? TANKS : [selectedTank];
 		switchTankStreams(activeTankIds);
+		window.localStorage.setItem(STORAGE_KEY, selectedTank);
 	});
 
 	onDestroy(() => {
